@@ -6,7 +6,7 @@ hbitmap = inhbitmap;
 dquantperd = 10/1000; %mm / mm(z)
 derateperdist = downsamp/300; %(x-y)mm per pixel per mm(z)
 numsteperrallowed = 1.5;
-deratefact = 1;
+deratefact = 1.5;
 
 depththresh = numsteperrallowed * dquantperd;
 xythresh = derateperdist * deratefact;
@@ -180,7 +180,7 @@ planesize = numPointsProcessed;
 %e = cputime-t
 
 %comment return to draw stuff
-return;
+%return;
 
 
 XCoeff = Coefficients(1); % X coefficient

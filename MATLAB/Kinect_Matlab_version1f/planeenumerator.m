@@ -6,15 +6,15 @@ sizearray = [];
 hbitmap = false(size(XYZ,1),size(XYZ,2));
 downsamp = 2;
 
-%figure(1)
-%imshow(double(Dp), [0 3000]);
-%colormap('jet');
-%figure(2)
-%cla;
-%axis equal;
+figure(1)
+imshow(double(Dp), [0 5000]);
+colormap('jet');
+figure(2)
+cla;
+axis equal;
 
-%L = plot3(XYZ(:,:,1),XYZ(:,:,2),-XYZ(:,:,3), 'r.');
-%set(L,'Markersize',1);
+L = plot3(XYZ(:,:,1),XYZ(:,:,2),-XYZ(:,:,3), 'r.');
+set(L,'Markersize',1);
 
 %HACK!!!!
 % [eqn planesize hbitmap] = planefindfs([5*downsamp*10,5*downsamp*10], XYZ, downsamp, hbitmap);
