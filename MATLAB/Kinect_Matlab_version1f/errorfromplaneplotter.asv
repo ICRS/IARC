@@ -1,0 +1,10 @@
+
+grabnewframe;
+planeenumerator;
+[C,I] = max(sizearray);
+eqn = eqnarray(:,I);
+
+deltadepth = nan(640, 480);
+
+for x = 1:
+deltadepth = D - 

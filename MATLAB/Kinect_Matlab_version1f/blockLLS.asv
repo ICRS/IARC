@@ -1,0 +1,9 @@
+for x = 0:63
+    for y = 0:47
+        
+        Xlist = nan(100,1);
+        
+        
+        for dx = 1:10
+            for dy = 1:10
+                pointlist

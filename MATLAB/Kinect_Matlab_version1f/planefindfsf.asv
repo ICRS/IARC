@@ -1,0 +1,146 @@
+function [ PlaneEQ hbitmap ] = planefindfsf( Seedpoint, hbitmap )
+%PLANEFINDFSF Summary of this function goes here
+%   Detailed explanation goes here
+
+% bitmap of points in plane
+if clearbitmap
+    hbitmap = zeros(size(XYZ,1),size(XYZ,2));
+    clarbitmap = 0;
+end
+%if (~exist('hbitmap', 'var'))
+%    hbitmap = zeros(size(XYZ,1),size(XYZ,2));
+%end
+
+
+% set initial plane eqn - just random plane through chosen point
+Coefficients = [ 0; 0; XYZ(x,y,3)];
+%Coefficients = [-0.471147297884083;-0.219223020604994;2168.21317806309];
+% Coefficients = [XCoeff; YCoeff; CCoeff]
+% Using the above variables, z = XCoeff * x + YCoeff * y + CCoeff
+
+
+%preallocate for first iteration
+Xcolv = [0;0;0;0];
+Ycolv = [0;0;0;0];
+Zcolv = [0;0;0;0];
+
+
+% make list of points queued for processing
+planepoints = zeros(100000,2);
+planepoints(1,:) = [x y];
+
+
+numPointsProcessed = 0;
+numPointsThreshold = 4;
+t = cputime; 
+
+
+head = 1;
+tail = 2;
+
+
+while head~=tail
+    while numPointsProcessed < numPointsThreshold && head~=tail
+        point = [ planepoints(head,1) planepoints(head,2) ];
+        
+        if hbitmap(point(1),point(2))~=1
+            % calculate error
+            thePoint = [ XYZ(point(1),point(2),1) XYZ(point(1),point(2),2) XYZ(point(1),point(2),3)];
+            candZerr = thePoint(1) * Coefficients(1) + thePoint(2) * Coefficients(2) + Coefficients(3) - thePoint(3);
+
+
+            if (abs(candZerr)<depththreshold)   %else for this dude makes the shape outline
+                % yay - add point
+                numPointsProcessed = numPointsProcessed+1;
+
+
+
+
+                % add neighbours
+                if point(1)>1 && point(1)<size(XYZ,1) && point(2)>1 && point(2)<size(XYZ,2)
+                    planepoints(tail,:) = [point(1)+1 point(2)];
+                    planepoints(tail+1,:) = [point(1)-1 point(2)];
+                    planepoints(tail+2,:) = [point(1) point(2)+1];
+                    planepoints(tail+3,:) = [point(1) point(2)-1];
+                    tail=tail+4;
+                end
+
+
+                if tail>99000
+                    planepoints=planepoints(head:tail,:);
+                    tail = tail-head+1;
+                    head = 1;
+                    planepoints=[ planepoints; zeros(100000-tail,2) ];
+                end
+
+
+                Xcolv(numPointsProcessed) = thePoint(1); 
+                Ycolv(numPointsProcessed) = thePoint(2); 
+                Zcolv(numPointsProcessed) = thePoint(3); 
+
+
+            end
+            hbitmap(point(1),point(2))=1;
+        end
+
+
+        % remove from todo list
+        head = head+1;
+        
+
+
+    end
+    
+    if head==tail
+        break;
+    end
+        
+    Const = ones(size(Xcolv)); % Vector of ones for constant term
+    Coefficients = [Xcolv Ycolv Const]\Zcolv; % Find the coefficients
+    
+    Xcolv = [Xcolv; nan(numPointsThreshold,1)]; 
+    Ycolv = [Ycolv; nan(numPointsThreshold,1)];
+    Zcolv = [Zcolv; nan(numPointsThreshold,1)];
+    
+    numPointsThreshold = numPointsThreshold*2;
+                
+end
+
+PlaneEQ = Coefficients;
+
+return;
+
+e = cputime-t
+
+
+XCoeff = Coefficients(1); % X coefficient
+YCoeff = Coefficients(2); % X coefficient
+CCoeff = Coefficients(3); % constant term
+% Using the above variables, z = XCoeff * x + YCoeff * y + CCoeff
+figure(1)
+L=plot3(Xcolv,Ycolv,Zcolv,'ro'); % Plot the original data points
+set(L,'Markersize',0.2*get(L,'Markersize')) % Making the circle markers larger
+set(L,'Markerfacecolor','r') % Filling in the markers
+hold on;
+%[xx, yy]=meshgrid(-1000:10:1000,-1000:10:1000); % Generating a regular grid for plotting
+%zz = XCoeff * xx + YCoeff * yy + CCoeff;
+%surf(xx,yy,zz) % Plotting the surface
+title(sprintf('Plotting plane z=(%f)*x+(%f)*y+(%f)',XCoeff, YCoeff, CCoeff))
+
+
+hold off;
+
+
+% figure(2)
+% X=[];
+% Y=[];
+% Z=[];
+% X(:,:) = XYZ(:,:,1);
+% Y(:,:) = XYZ(:,:,2);
+% Z(:,:) = XYZ(:,:,3);
+% Z(Z==0)=nan;
+% mesh(X,Y,3000-Z)
+
+
+end
+
