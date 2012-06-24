@@ -3,12 +3,12 @@ function [ PlaneEQ planesize hbitmap ] = planefindfs( Seedpoint, XYZ, downsamp, 
 %   Detailed explanation goes here
 hbitmap = inhbitmap;
 
-dquantperd = 10/1000; %mm / mm(z)
+quantfactors = [3.126e-06,-0.001557,3.709]; %quantization quadratic fit.
 derateperdist = downsamp/300; %(x-y)mm per pixel per mm(z)
 numsteperrallowed = 1.5;
 deratefact = 1.5;
 
-depththresh = numsteperrallowed * dquantperd;
+depththresh = numsteperrallowed * quantfactors;
 xythresh = derateperdist * deratefact;
 
 x = Seedpoint(1);
@@ -85,7 +85,7 @@ while head~=tail
             dzdy = Coefficients(2);
             candZerr = thePoint(1) * dzdx + thePoint(2) * dzdy + Coefficients(3) - thePoint(3);
 
-            if (abs(candZerr)< thePoint(3)*(depththresh + xythresh*(abs(dzdx) + abs(dzdy))))   %else for this dude makes the shape outline
+            if (abs(candZerr)< (thePoint(3)*xythresh*(abs(dzdx) + abs(dzdy))) + depththresh*[thePoint(3)^2 thePoint(3) 1]')  %else for this dude makes the shape outline
                 % yay - add point
                 numPointsProcessed = numPointsProcessed+1;
 
@@ -179,17 +179,13 @@ PlaneEQ = Coefficients;
 planesize = numPointsProcessed;
 %e = cputime-t
 
-%comment return to draw stuff
-%return;
-
-
 XCoeff = Coefficients(1); % X coefficient
 YCoeff = Coefficients(2); % X coefficient
 CCoeff = Coefficients(3); % constant term
 % Using the above variables, z = XCoeff * x + YCoeff * y + CCoeff
 
 %look only for "large" planes
-if CCoeff <= 0 || planesize < 1000/(downsamp^2) % * XYZ(Seedpoint(1), Seedpoint(2), 3)/1000); %This is to track only ABSOLUTLY large planes.
+if CCoeff <= 0 || planesize < 5000/(downsamp^2) % * XYZ(Seedpoint(1), Seedpoint(2), 3)/1000); %This is to track only ABSOLUTLY large planes.
     hbitmap = inhbitmap;
     PlaneEQ = [nan nan nan];
     planesize = 0;
@@ -199,18 +195,21 @@ if CCoeff >= 10000
     wtf =  'wtf'
 end
 
+%comment return to draw stuff
+%return;
+
 %generate colorspace for plotting with random colors
 cmap = jet(10);
 
 figure(2)
 hold on;
-L=plot3(Xcolv,Ycolv,-Zcolv,'.'); % Plot the original data points
+L=plot3(Xcolv,Zcolv,Ycolv,'.'); % Plot the original data points
 %set(L,'Markersize',0.2*get(L,'Markersize')) % Making the circle markers larger
 set(L,'MarkerEdgeColor',cmap(mod(int32(CCoeff*2),10)+1,:)) % Filling in themarkers
 
 [xx, yy]=meshgrid(min(Xcolv):10:max(Xcolv),min(Ycolv):10:max(Ycolv)); % Generating a regular grid for plotting
 zz = XCoeff * xx + YCoeff * yy + CCoeff;
-%mesh(xx,yy,-zz) % Plotting the surface
+%mesh(xx,-zz,yy) % Plotting the surface
 %alpha(0);
 title(sprintf('Plotting plane z=(%f)*x+(%f)*y+(%f)',XCoeff, YCoeff, CCoeff))
 hold off;

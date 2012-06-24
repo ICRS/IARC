@@ -6,14 +6,16 @@ sizearray = [];
 hbitmap = false(size(XYZ,1),size(XYZ,2));
 downsamp = 2;
 
-figure(1)
-imshow(double(Dp), [0 5000]);
-colormap('jet');
+
+%imshow(double(Dp), [0 5000]);
+%colormap('jet');
 figure(2)
 cla;
 axis equal;
 
-L = plot3(XYZ(:,:,1),XYZ(:,:,2),-XYZ(:,:,3), 'r.');
+figure(1)
+cla;
+L = plot3(XYZ(:,:,1), XYZ(:,:,3), XYZ(:,:,2), 'r.');
 set(L,'Markersize',1);
 
 %HACK!!!!
