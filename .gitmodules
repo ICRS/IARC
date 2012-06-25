@@ -1,0 +1,3 @@
+[submodule "OpenPilot"]
+	path = OpenPilot
+	url = git://git.openpilot.org/OpenPilot.git
