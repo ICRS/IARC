@@ -7,6 +7,9 @@
 *.o
 *.so
 
+# Build directory #
+build/
+
 # Matlab binaries #
 *.mexw64
 *.mexw32
