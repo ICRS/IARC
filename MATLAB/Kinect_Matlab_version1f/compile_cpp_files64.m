@@ -17,7 +17,7 @@ function compile_cpp_files(OpenNiPath)
 %
 if(nargin<1)
     OpenNiPathInclude=getenv('OPEN_NI_INCLUDE');
-    OpenNiPathLib=getenv('OPEN_NI_LIB');
+    OpenNiPathLib=getenv('OPEN_NI_LIB64');
     if(isempty(OpenNiPathInclude)||isempty(OpenNiPathLib))
         error('OpenNI path not found, Please call the function like compile_cpp_files(''examplepath\openNI'')');
     end
@@ -31,6 +31,6 @@ files=dir('*.cpp');
 for i=1:length(files)
     Filename=files(i).name;
     clear(Filename); 
-    mex('-v',['-L' OpenNiPathLib],'-lopenNI',['-I' OpenNiPathInclude],Filename);
+    mex('-v',['-L' OpenNiPathLib],'-lopenNI64',['-I' OpenNiPathInclude],Filename);
 end
 cd('..');
