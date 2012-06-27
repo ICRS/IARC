@@ -1,3 +1,6 @@
 [submodule "OpenPilot"]
 	path = OpenPilot
 	url = git://git.openpilot.org/OpenPilot.git
+[submodule "largefiles"]
+	path = largefiles
+	url = https://github.com/ICRS/IARC-largefiles.git
