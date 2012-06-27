@@ -67,8 +67,8 @@ class OpenNIPlanarSegmentation
 
       seg_.setOptimizeCoefficients (true);
       seg_.setModelType (pcl::SACMODEL_PLANE);
-      seg_.setMethodType (pcl::SAC_RANSAC);
-      seg_.setMaxIterations (1000);
+      seg_.setMethodType (pcl::SAC_PROSAC);
+      seg_.setMaxIterations (10);
       seg_.setDistanceThreshold (threshold);
 
       extract_.setNegative (false);
