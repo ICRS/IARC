@@ -4,3 +4,6 @@
 [submodule "largefiles"]
 	path = largefiles
 	url = https://github.com/ICRS/IARC-largefiles.git
+[submodule "pcl-android"]
+	path = pcl-android
+	url = git://github.com/patmarion/pcl-superbuild.git
